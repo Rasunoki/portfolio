@@ -34,23 +34,50 @@ export default function Skills() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {groups.map((g, gi) => (
-            <motion.div key={g.title}
-              initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ delay: gi * 0.07, duration: 0.38 }}
-              className="card p-6"
+            <div
+              key={g.title}
+              onMouseMove={(e) => {
+                const el = e.currentTarget;
+                const { left, top, width, height } = el.getBoundingClientRect();
+                const x = ((e.clientX - left) / width - 0.5) * 12;
+                const y = ((e.clientY - top) / height - 0.5) * -12;
+                el.style.transition = "transform 0s, box-shadow 0.2s, border-color 0.2s";
+                el.style.transform = `perspective(600px) rotateX(${y}deg) rotateY(${x}deg) translateZ(6px)`;
+              }}
+              onMouseLeave={(e) => {
+                const el = e.currentTarget;
+                el.style.transition = "transform 0.4s ease, box-shadow 0.2s, border-color 0.2s";
+                el.style.transform = "";
+              }}
             >
-              <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--blue)] mb-4 pb-3 border-b border-[var(--border)]">
-                {g.title}
-              </h3>
-              <ul className="space-y-2.5">
-                {g.items.map((item) => (
-                  <li key={item} className="flex items-center gap-2.5 text-sm text-[var(--fg2)]">
-                    <span className="w-1 h-1 rounded-full bg-[var(--border)] shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: gi * 0.08, duration: 0.4 }}
+                className="card p-6"
+              >
+                <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--blue)] mb-4 pb-3 border-b border-[var(--border)]">
+                  {g.title}
+                </h3>
+                <motion.ul
+                  variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05, delayChildren: 0.1 } } }}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  className="space-y-2.5"
+                >
+                  {g.items.map((item) => (
+                    <motion.li
+                      key={item}
+                      variants={{ hidden: { opacity: 0, x: -10 }, visible: { opacity: 1, x: 0, transition: { duration: 0.28 } } }}
+                      className="flex items-center gap-2.5 text-sm text-[var(--fg2)]"
+                    >
+                      <span className="w-1 h-1 rounded-full bg-[var(--border)] shrink-0" />
+                      {item}
+                    </motion.li>
+                  ))}
+                </motion.ul>
+              </motion.div>
+            </div>
           ))}
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Mail, Link2, GitFork, ArrowRight, Download } from "lucide-react";
 
 const stats = [
@@ -10,30 +11,62 @@ const stats = [
 ];
 
 export default function Hero() {
+  const heroRef = useRef<HTMLElement>(null);
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+
+  const o1x = useSpring(useTransform(rawX, [-1, 1], [-22, 22]), { stiffness: 70, damping: 22 });
+  const o1y = useSpring(useTransform(rawY, [-1, 1], [-14, 14]), { stiffness: 70, damping: 22 });
+  const o2x = useSpring(useTransform(rawX, [-1, 1], [18, -18]), { stiffness: 55, damping: 20 });
+  const o2y = useSpring(useTransform(rawY, [-1, 1], [11, -11]), { stiffness: 55, damping: 20 });
+
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el) return;
+    const onMove = (e: MouseEvent) => {
+      const r = el.getBoundingClientRect();
+      rawX.set((e.clientX - r.left - r.width / 2) / (r.width / 2));
+      rawY.set((e.clientY - r.top - r.height / 2) / (r.height / 2));
+    };
+    el.addEventListener("mousemove", onMove);
+    return () => el.removeEventListener("mousemove", onMove);
+  }, [rawX, rawY]);
+
   return (
     <section
+      ref={heroRef}
       className="relative min-h-screen flex items-center pt-14 overflow-hidden"
       style={{ background: "var(--bg)" }}
     >
-      {/* Subtle ambient orbs — single color, no gradient */}
-      <div
-        className="orb float-a"
-        style={{
-          width: 500, height: 500,
-          top: "-100px", left: "-80px",
-          background: "var(--blue)",
-          opacity: 0.04,
-        }}
-      />
-      <div
-        className="orb float-b"
-        style={{
-          width: 380, height: 380,
-          top: "35%", right: "-100px",
-          background: "var(--blue)",
-          opacity: 0.03,
-        }}
-      />
+      {/* Ambient orbs with mouse parallax */}
+      <div className="absolute" style={{ top: "-100px", left: "-80px", pointerEvents: "none" }}>
+        <motion.div style={{ x: o1x, y: o1y }}>
+          <div
+            className="float-a"
+            style={{
+              width: 500, height: 500,
+              borderRadius: "50%",
+              filter: "blur(100px)",
+              background: "var(--blue)",
+              opacity: 0.04,
+            }}
+          />
+        </motion.div>
+      </div>
+      <div className="absolute" style={{ top: "35%", right: "-100px", pointerEvents: "none" }}>
+        <motion.div style={{ x: o2x, y: o2y }}>
+          <div
+            className="float-b"
+            style={{
+              width: 380, height: 380,
+              borderRadius: "50%",
+              filter: "blur(100px)",
+              background: "var(--blue)",
+              opacity: 0.03,
+            }}
+          />
+        </motion.div>
+      </div>
 
       <div className="wrap w-full py-24 lg:py-32 relative z-10">
         <div className="max-w-3xl">

@@ -35,14 +35,24 @@ export default function Experience() {
                 </span>
               </div>
 
-              <ul className="space-y-2 mb-4">
+              <motion.ul
+                variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07 } } }}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                className="space-y-2 mb-4"
+              >
                 {exp.bullets.map((b, bi) => (
-                  <li key={bi} className="flex gap-2.5 text-sm text-[var(--muted)]">
+                  <motion.li
+                    key={bi}
+                    variants={{ hidden: { opacity: 0, x: -10 }, visible: { opacity: 1, x: 0, transition: { duration: 0.3 } } }}
+                    className="flex gap-2.5 text-sm text-[var(--muted)]"
+                  >
                     <span className="w-1 h-1 rounded-full bg-[var(--blue)] mt-2 shrink-0" />
                     {b}
-                  </li>
+                  </motion.li>
                 ))}
-              </ul>
+              </motion.ul>
 
               <div className="flex flex-wrap gap-1.5">
                 {exp.skills.map((sk) => (
