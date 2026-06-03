@@ -1,10 +1,20 @@
 import { chromium } from "playwright-core";
-import { writeFileSync } from "fs";
+import { writeFileSync, readFileSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+// Load and encode profile image if it exists
+const profileImagePath = resolve(__dirname, '../public/profile.png');
+let profileImageBase64 = '';
+try {
+  profileImageBase64 = Buffer.from(readFileSync(profileImagePath)).toString('base64');
+} catch (e) {
+  console.warn('Profile image not found, generating without photo');
+}
+
+// Generate the HTML
 const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,14 +30,18 @@ const html = `<!DOCTYPE html>
     line-height: 1.45;
   }
 
-  /* Header — centered name block */
-  .header { text-align: center; margin-bottom: 14px; }
-  .header h1 { font-size: 18pt; font-weight: 700; letter-spacing: 0.5px; }
+  /* Header — photo on left, info on right */
+  .header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 14px; }
+  .header .photo { flex-shrink: 0; }
+  .header .photo img { width: 100px; height: 120px; object-fit: cover; border-radius: 2px; }
+  .header .info { flex: 1; }
+  .header h1 { font-size: 18pt; font-weight: 700; letter-spacing: 0.5px; margin: 0; }
   .header .contacts {
     font-size: 10pt; margin-top: 5px;
   }
-  .header .contacts span { display: inline; }
-  .header .contacts span + span::before { content: " | "; }
+  .header .contacts span { display: block; line-height: 1.3; }
+  .header .contacts span::before { content: ""; }
+  ${!profileImageBase64 ? `.header .photo { display: none; }` : ``}
 
   /* Sections */
   .section { margin-bottom: 14px; }
@@ -59,13 +73,16 @@ const html = `<!DOCTYPE html>
 <body>
 
 <div class="header">
-  <h1>Joseph Rafael A. Macasling</h1>
-  <div class="contacts">
-    <span>Valenzuela City, Philippines</span>
-    <span>josephrmacasling@gmail.com</span>
-    <span>0951 546 5994</span>
-    <span>linkedin.com/in/joseph-rafael-macasling-1b1027412</span>
-    <span>github.com/Rasunoki</span>
+  ${profileImageBase64 ? `<div class="photo"><img src="data:image/png;base64,${profileImageBase64}" alt="Profile" /></div>` : ''}
+  <div class="info">
+    <h1>Joseph Rafael A. Macasling</h1>
+    <div class="contacts">
+      <span>Valenzuela City, Philippines</span>
+      <span>josephrmacasling@gmail.com</span>
+      <span>0951 546 5994</span>
+      <span>linkedin.com/in/joseph-rafael-macasling-1b1027412</span>
+      <span>github.com/Rasunoki</span>
+    </div>
   </div>
 </div>
 
