@@ -19,7 +19,9 @@ export default function Cursor() {
   const rH = useSpring(ringH, { stiffness: 280, damping: 28 });
 
   useEffect(() => {
+    // Skip on touch/coarse pointers and whenever the viewer asks for reduced motion.
     if (!window.matchMedia("(pointer: fine)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     document.documentElement.classList.add("custom-cursor");
 

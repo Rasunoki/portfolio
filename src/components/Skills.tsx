@@ -37,6 +37,8 @@ export default function Skills() {
             <div
               key={g.title}
               onMouseMove={(e) => {
+                // The tilt is decoration — leave it off for reduced-motion viewers.
+                if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
                 const el = e.currentTarget;
                 const { left, top, width, height } = el.getBoundingClientRect();
                 const x = ((e.clientX - left) / width - 0.5) * 12;

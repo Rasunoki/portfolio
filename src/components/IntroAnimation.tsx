@@ -1,33 +1,51 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const ease: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const wipe: [number, number, number, number] = [0.76, 0, 0.24, 1];
 
+/**
+ * Decided once per page load and cached, so useSyncExternalStore always reads
+ * the same snapshot — re-reading sessionStorage after the intro finishes would
+ * flip the value mid-render.
+ */
+let decision: boolean | null = null;
+
+function shouldPlayIntro() {
+  if (decision === null) {
+    decision =
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+      !sessionStorage.getItem("intro-done");
+  }
+  return decision;
+}
+
+// The intro is client-only: the server snapshot is always false, so the page
+// markup ships without it and no hydration mismatch is possible.
+const subscribe = () => () => {};
+const serverSnapshot = () => false;
+
 export default function IntroAnimation() {
-  const [show, setShow] = useState<boolean | null>(null);
+  const play = useSyncExternalStore(subscribe, shouldPlayIntro, serverSnapshot);
+  const [dismissed, setDismissed] = useState(false);
+  const show = play && !dismissed;
 
   useEffect(() => {
-    if (sessionStorage.getItem("intro-done")) { setShow(false); return; }
-    setShow(true);
+    if (!show) return;
     document.body.style.overflow = "hidden";
-    const t = setTimeout(() => setShow(false), 3200);
-    return () => clearTimeout(t);
-  }, []);
+    const t = setTimeout(() => setDismissed(true), 3200);
+    return () => {
+      clearTimeout(t);
+      document.body.style.overflow = "";
+    };
+  }, [show]);
 
-  const cleanup = () => {
-    document.body.style.overflow = "";
-    sessionStorage.setItem("intro-done", "1");
-  };
-
-  const skip = () => { setShow(false); cleanup(); };
-
-  if (show === null) return null;
+  const skip = () => setDismissed(true);
 
   return (
-    <AnimatePresence onExitComplete={cleanup}>
+    <AnimatePresence onExitComplete={() => sessionStorage.setItem("intro-done", "1")}>
       {show && (
         <motion.div
           key="intro"

@@ -21,13 +21,13 @@ export default function Projects() {
         />
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-2 mb-8">
+        <div className="flex flex-wrap gap-2 mb-8" role="group" aria-label="Filter projects by category">
           {CATS.map((cat) => {
             const n = cat === "All" ? projects.length : projects.filter((p) => p.category === cat).length;
             if (cat !== "All" && n === 0) return null;
             const on = active === cat;
             return (
-              <button key={cat} onClick={() => setActive(cat)}
+              <button key={cat} onClick={() => setActive(cat)} aria-pressed={on}
                 className={`px-3.5 py-1.5 text-xs font-semibold rounded-md border transition-all ${
                   on
                     ? "bg-[var(--fg)] text-[var(--bg)] border-[var(--fg)]"

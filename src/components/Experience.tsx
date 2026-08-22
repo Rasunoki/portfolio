@@ -12,7 +12,7 @@ export default function Experience() {
         <SectionHeading
           label="Experience"
           title="Work History"
-          subtitle="A track record of driving results across operations, project management, and business analysis."
+          subtitle="Directing, shooting, and cutting for independent artists, indie game studios, and my university since 2022."
         />
 
         {/* Work */}

@@ -45,7 +45,11 @@
 
 /* ─────────────── Base ─────────────── */
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  /* Anchor jumps clear the fixed 3.5rem navbar. */
+  scroll-padding-top: 4.5rem;
+}
 
 body {
   background: var(--bg);
@@ -53,6 +57,32 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   transition: background 0.25s, color 0.25s;
+}
+
+/* ─────────────── Focus visibility ─────────────── */
+
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1000;
+  padding: 0.6rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 8px;
+  background: var(--fg);
+  color: var(--bg);
+  transform: translateY(-200%);
+  transition: transform 0.18s ease;
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
 }
 
 /* ─────────────── Scrollbar ─────────────── */
@@ -70,8 +100,11 @@ body {
 /* ─────────────── Layout ─────────────── */
 
 .wrap { max-width: 1100px; margin-inline: auto; padding-inline: 2rem; }
-.sec  { padding-top: 6rem; padding-bottom: 6rem; }
-@media (max-width: 768px) { .sec { padding-top: 3.5rem; padding-bottom: 3.5rem; } }
+.sec  { padding-top: 6rem; padding-bottom: 6rem; scroll-margin-top: 3.5rem; }
+@media (max-width: 768px) {
+  .wrap { padding-inline: 1.25rem; }
+  .sec { padding-top: 3.5rem; padding-bottom: 3.5rem; }
+}
 
 /* ─────────────── Cards ─────────────── */
 
@@ -88,6 +121,21 @@ body {
 }
 .dark .card:hover {
   box-shadow: 0 6px 28px rgba(0,0,0,0.5);
+}
+
+/* ─────────────── Masonry (Gallery) ─────────────── */
+/* Mobile-first: one column, widening at each breakpoint. */
+
+.masonry {
+  columns: 1;
+  column-gap: 0.75rem;
+}
+@media (min-width: 640px)  { .masonry { columns: 2; } }
+@media (min-width: 1024px) { .masonry { columns: 3; } }
+
+.masonry > * {
+  break-inside: avoid;
+  margin-bottom: 0.75rem;
 }
 
 /* ─────────────── Floating orbs ─────────────── */
@@ -154,4 +202,28 @@ body {
   background: var(--blue);
   border-radius: 2px;
   flex-shrink: 0;
+}
+
+/* ─────────────── Reduced motion ─────────────── */
+/*
+ * Users who ask for reduced motion get a static page: no orb drift, no pulse,
+ * no smooth-scroll hijack, and near-instant transitions. Framer Motion is
+ * disabled separately via MotionConfig in providers.tsx.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .float-a, .float-b, .float-c { animation: none !important; }
+  .pulse-dot::before { display: none; }
+  .card:hover { transform: none; }
 }

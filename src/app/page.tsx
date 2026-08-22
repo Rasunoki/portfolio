@@ -10,6 +10,7 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import IntroAnimation from "@/components/IntroAnimation";
 import Cursor from "@/components/Cursor";
+import BackToTop from "@/components/BackToTop";
 
 export default function Home() {
   return (
@@ -17,7 +18,7 @@ export default function Home() {
       <Cursor />
       <IntroAnimation />
       <Navbar />
-      <main>
+      <main id="main">
         <Hero />
         <Showreel />
         <About />
@@ -28,6 +29,7 @@ export default function Home() {
         <Contact />
       </main>
       <Footer />
+      <BackToTop />
     </>
   );
 }

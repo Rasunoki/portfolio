@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Mail, Link2, GitFork, ArrowRight, Download } from "lucide-react";
+import { site } from "@/data/site";
 
 const stats = [
   { value: "2023", label: "Started"       },
@@ -35,6 +36,7 @@ export default function Hero() {
   return (
     <section
       ref={heroRef}
+      aria-labelledby="hero-name"
       className="relative min-h-screen flex items-center pt-14 overflow-hidden"
       style={{ background: "var(--bg)" }}
     >
@@ -85,6 +87,7 @@ export default function Hero() {
           <motion.h1
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.05 }}
+            id="hero-name"
             className="font-display text-[clamp(3rem,8vw,5.5rem)] font-bold tracking-tight leading-[1.0] text-[var(--fg)] mb-5"
             style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
           >
@@ -160,9 +163,9 @@ export default function Hero() {
             className="flex items-center gap-6"
           >
             {[
-              { icon: <Mail size={14} />,    href: "mailto:josephrmacasling@gmail.com",            label: "Email"    },
-              { icon: <Link2 size={14} />,   href: "https://www.linkedin.com/in/joseph-rafael-macasling-1b1027412", label: "LinkedIn" },
-              { icon: <GitFork size={14} />, href: "https://github.com/Rasunoki",           label: "GitHub"   },
+              { icon: <Mail size={14} />,    href: `mailto:${site.email}`,   label: "Email"    },
+              { icon: <Link2 size={14} />,   href: site.socials.linkedin,    label: "LinkedIn" },
+              { icon: <GitFork size={14} />, href: site.socials.github,      label: "GitHub"   },
             ].map((s) => (
               <a
                 key={s.label}
